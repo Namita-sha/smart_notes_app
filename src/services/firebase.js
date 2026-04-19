@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -16,10 +16,15 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Google Sign In
+// Google Sign In (redirect — avoids COOP popup issues)
 export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, provider);
-  return result.user;
+  await signInWithRedirect(auth, provider);
+}
+
+// Call once on app load to capture the redirect result
+export async function handleRedirectResult() {
+  const result = await getRedirectResult(auth);
+  return result?.user ?? null;
 }
 
 // Sign Out
@@ -35,7 +40,7 @@ export async function saveSession(userId, topic, data, quizScore) {
     cleanNotes: data.cleanNotes,
     flashcards: data.flashcards,
     quiz: data.quiz,
-    quizScore,           // { correct: 3, total: 5 }
+    quizScore,
     createdAt: serverTimestamp(),
   });
 }

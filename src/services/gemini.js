@@ -52,7 +52,7 @@ Rules:
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.4, maxOutputTokens: 3000 },
+      generationConfig: { temperature: 0.4, maxOutputTokens: 8000 }, // ← fixed
     }),
   });
 
@@ -66,5 +66,11 @@ Rules:
   if (!text) throw new Error("No response from Gemini");
 
   const cleaned = text.replace(/```json|```/g, "").trim();
-  return JSON.parse(cleaned);
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (e) {
+    console.error("Raw Gemini output:", text);
+    throw new Error("Gemini returned incomplete JSON. Try again or shorten your notes.");
+  }
 }

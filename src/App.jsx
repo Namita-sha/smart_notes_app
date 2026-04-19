@@ -53,7 +53,6 @@ function AppContent() {
             const correct = results.questions.filter(
               (q, i) => results.userAnswers[i] === q.correctIndex
             ).length;
-            // Save session to Firestore
             await saveSession(user.uid, generatedData.topic, generatedData, {
               correct,
               total: results.questions.length,
