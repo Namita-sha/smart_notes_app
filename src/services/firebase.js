@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -16,15 +16,10 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Google Sign In (redirect — avoids COOP popup issues)
+// Google Sign In
 export async function signInWithGoogle() {
-  await signInWithRedirect(auth, provider);
-}
-
-// Call once on app load to capture the redirect result
-export async function handleRedirectResult() {
-  const result = await getRedirectResult(auth);
-  return result?.user ?? null;
+  const result = await signInWithPopup(auth, provider);
+  return result.user;
 }
 
 // Sign Out

@@ -1,8 +1,12 @@
 import { signInWithGoogle } from "../services/firebase";
 
 export default function LoginScreen() {
-  function handleLogin() {
-    signInWithGoogle().catch((e) => alert("Login failed: " + e.message));
+  async function handleLogin() {
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      alert("Login failed: " + e.message);
+    }
   }
 
   return (
